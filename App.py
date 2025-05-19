@@ -94,4 +94,10 @@ input_array = np.array(features).reshape(1, -1)
 
 if st.button("Predict"):
     prediction = model.predict(input_array)
-    st.success(f"Predicted value: {prediction[0]:.4f}")
+    predicted_value = prediction[0]
+    
+    st.success(f"📈 Predicted Closing Price: ${predicted_value:.2f}")
+    
+    st.markdown("""
+    **Note:** This is the estimated stock price at market close for the next trading day based on your inputs.
+    """)
