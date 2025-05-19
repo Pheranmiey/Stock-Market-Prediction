@@ -3,7 +3,6 @@ import pickle
 import numpy as np
 import random
 
-# Load the model (cached)
 @st.cache_resource
 def load_model():
     with open('catboost_model.pkl', 'rb') as f:
@@ -12,7 +11,6 @@ def load_model():
 
 model = load_model()
 
-# Feature explanations
 feature_info = {
     'EMA_20': '20-day Exponential Moving Average.',
     'EMA_200': '200-day Exponential Moving Average.',
@@ -36,7 +34,6 @@ feature_info = {
     'DAAA': 'Moody’s Seasoned Aaa Corporate Bond Yield.'
 }
 
-# Define reasonable ranges for sample values
 sample_ranges = {
     'EMA_20': (950, 1050),
     'EMA_200': (900, 1100),
@@ -62,30 +59,36 @@ sample_ranges = {
 
 st.title("Stock Market Prediction")
 
-st.write("Please enter values below. Or click Autofill to test quickly.")
+# Use session state to manage inputs
+if 'inputs' not in st.session_state:
+    st.session_state.inputs = {key: 0.0 for key in feature_info}
 
-# Button to trigger autofill
-autofill = st.button("Autofill with Sample Data")
+# Button logic
+col1, col2 = st.columns(2)
+with col1:
+    if st.button("Autofill with Sample Data"):
+        for feature_name in feature_info:
+            low, high = sample_ranges[feature_name]
+            if isinstance(low, int) and isinstance(high, int):
+                st.session_state.inputs[feature_name] = random.randint(low, high)
+            else:
+                st.session_state.inputs[feature_name] = round(random.uniform(low, high), 2)
 
-# Collect inputs
+with col2:
+    if st.button("Reset"):
+        st.session_state.inputs = {key: 0.0 for key in feature_info}
+
+# Input fields
 features = []
 for feature_name, explanation in feature_info.items():
-    if autofill:
-        # Randomly generate a sample value within range
-        low, high = sample_ranges[feature_name]
-        if isinstance(low, int) and isinstance(high, int):
-            val = random.randint(low, high)
-        else:
-            val = round(random.uniform(low, high), 2)
-    else:
-        val = 0.0
-
     val = st.number_input(
         label=f"{feature_name} ℹ️",
-        value=val,
+        value=st.session_state.inputs.get(feature_name, 0.0),
+        key=feature_name,
         help=explanation
     )
     features.append(val)
+    st.session_state.inputs[feature_name] = val
 
 input_array = np.array(features).reshape(1, -1)
 
