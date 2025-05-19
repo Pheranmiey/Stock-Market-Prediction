@@ -97,7 +97,3 @@ if st.button("Predict"):
     predicted_value = prediction[0]
     
     st.success(f"📈 Predicted Closing Price: ${predicted_value:.2f}")
-    
-    st.markdown("""
-    **Note:** This is the estimated stock price at market close for the next trading day based on your inputs.
-    """)
