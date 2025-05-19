@@ -82,7 +82,7 @@ with col2:
 features = []
 for feature_name, explanation in feature_info.items():
     val = st.number_input(
-        label=f"{feature_name} ℹ️",
+        label=f"{feature_name}",
         value=st.session_state.inputs.get(feature_name, 0.0),
         key=feature_name,
         help=explanation
